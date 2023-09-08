@@ -20,3 +20,14 @@ export interface APIResponse {
     timeUnit: "date" | "week" | "month";
     results: Result[];
 }
+
+export interface ShoppingData {
+    startDate: String;
+    endDate: String;
+    timeUnit: "date" | "week" | "month";
+    category: String;
+    keyword: String;
+    device?: "" | "pc"  | "mo";
+    gender?: "" | "m"  | "f";
+    ages?: String[];
+}

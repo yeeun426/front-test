@@ -1,50 +1,38 @@
-import { FC, useState, useEffect } from 'react';
+import { FC, useState, useEffect, useCallback } from 'react';
 import {PageDataInfo, PageDataSubInfo, PageGraphContents} from "./style"
 import axios, { AxiosRequestConfig } from "axios";
-// import { ShoppingData } from '../types/commonResponse';
-import Client from '../api';
-
+import { postChart } from '../api/index';
+import { ShoppingData, APIResponse } from '../interfaces/commonResponse';
+//commonreqeust = apiresponse
 // 쇼핑 데이터 리스트
-interface ShoppingData {
-    startData: String;
-    endData: String;
-    timeUnit: "date" | "week" | "month";
-    category: String;
-    keyword: String;
-    device?: "" | "pc"  | "mo";
-    gender?: "" | "m"  | "f";
-    ages?: String[];
-}
+// interface ShoppingData {
+//     startData: String;
+//     endData: String;
+//     timeUnit: "date" | "week" | "month";
+//     category: String;
+//     keyword: String;
+//     device?: "" | "pc"  | "mo";
+//     gender?: "" | "m"  | "f";
+//     ages?: String[];
+// }
 
 const Home: FC = () => {
     const [shoppings,   setShoppings] = useState<ShoppingData | null>(null);
 
-    const handleChart = async(newList: ShoppingData): Promise<ShoppingData> => {
-        try {
-            const response = await postChart<ShoppingData>;
-            console.log(response);
-            return response;
+    const handleChart = useCallback(async () => {
 
-          } catch (error) {
-            console.error(error);
-            throw new Error('Failed to create user');
-          }
-    }
-    // const creatChart = async (url: string,  data?: any, config? : AxiosRequestConfig) => {
-    //     try {
-    //         const response = await Client.post<ShoppingData>(url,  data, config);
-    //         console.log(response);
-    //         return response;
-
-    //       } catch (error) {
-    //         console.error(error);
-    //         throw new Error('Failed to create user');
-    //       }
-    // }
-
-    useEffect(() => {
-        handleChart()
-    },[])
+        const params: ShoppingData = {
+            startDate: "2017-08-01",
+            endDate: "2017-09-30",
+            timeUnit: "month",
+            category: "50000000",
+            keyword: "정장",
+            device: "",
+            gender: "",
+            ages: ["10", "20" ]
+        }
+        const data = await postChart<APIResponse>(params)
+      }, [])
 
     return (
         <>
@@ -96,7 +84,7 @@ const Home: FC = () => {
                     <option>pc</option>
                     <option>mo</option>
                 </select>    
-                <button>
+                <button onClick={handleChart}>
                     조회
                 </button>
             </PageDataSubInfo>
