@@ -1,7 +1,4 @@
-import axios, {AxiosResponse,} from 'axios'
-
 // api에서 내려주는 응답구조
-
 interface DataItem {
     period: string;
     group: string;
@@ -24,10 +21,10 @@ export interface APIResponse {
 export interface ShoppingData {
     startDate: String;
     endDate: String;
-    timeUnit: "date" | "week" | "month";
+    timeUnit: String;
     category: String;
     keyword: String;
-    device?: "" | "pc"  | "mo";
-    gender?: "" | "m"  | "f";
+    device?: String;
+    gender?: String;
     ages?: String[];
 }

@@ -4,17 +4,17 @@ import { ShoppingData } from '../interfaces/commonResponse';
 // axios 인스턴스 생성
 // create 메서드 : header
 const Client: Axios = axios.create({
-    baseURL: `${process.env.REACT_APP_NAVER_SHOPPING_API_URL}`,
+    url: `${process.env.REACT_APP_NAVER_SHOPPING_API_URL}`,
     headers: {
-        'Content-Type': 'application/json',
-        'X-Naver-Client-Id': `${process.env.REACT_APP_NAVER_SHOPPING_CLIENT_ID}`,
-        'X-Naver-Client-Secret': `${process.env.REACT_APP_NAVER_SHOPPING_CLIENT_SECRET}`
+        "X-Naver-Client-Id": `${process.env.REACT_APP_NAVER_SHOPPING_CLIENT_ID}`,
+        "X-Naver-Client-Secret": `${process.env.REACT_APP_NAVER_SHOPPING_CLIENT_SECRET}`,
+        "Content-Type": 'application/json'
     }
 });
 
 export const postChart = async<T> (params: ShoppingData): Promise<T|null> => {
     try {
-        const url = `${Client.defaults.baseURL}`
+        const url = `${Client.defaults.url}`
         const { status, data }: AxiosResponse<T>= await Client.post(url, params);
         console.log(data);
         return status <  500 ? data : null;    
