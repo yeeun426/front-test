@@ -36,7 +36,7 @@ const Home: FC = () => {
     const checkHandler = (e: React.ChangeEvent<HTMLInputElement>, value: string) => {
         setIsChecked(!isChecked);
         checkedItemHandler(value, e.target.checked);
-        console.log(checkAges);
+        // console.log(checkAges);
     };
 
     const handleChart = useCallback(async () => {
@@ -170,10 +170,10 @@ const Home: FC = () => {
                 </button>
             </PageDataSubInfo>
             <PageGraphContents>
-                <ResponsiveContainer width="100%" aspect = {4/1}>
+                <ResponsiveContainer width="100%" aspect = {3/1}>
                     <LineChart data={trend} >
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey= "period" tick/>
+                        <XAxis dataKey="period" type="category" allowDuplicatedCategory={false} />
                         <YAxis />
                         <Tooltip />
                         <Legend />
