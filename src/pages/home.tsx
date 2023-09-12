@@ -2,7 +2,15 @@ import React, { FC, useState, useCallback } from 'react';
 import {PageDataInfo, PageDataSubInfo, PageGraphContents} from "./style"
 import { postChart } from '../api/index';
 import { ShoppingData, APIResponse, Result, DataItem } from '../interfaces/commonResponse';
+
+// Chart Library(recharts)
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
+// Antd
+import {Button,  Space, Select, Input, DatePicker} from 'antd';
+import type { RangePickerProps } from 'antd/es/date-picker';
+
+const {Option} = Select;
 
 const Home: FC = () => {
     const [startDate, setStartDate] = useState<string>("");
@@ -16,28 +24,13 @@ const Home: FC = () => {
     const [trend, setTrend] = useState<DataItem[]>([]);
 
     const ages = [
-        { age : "10", title : "10대", color: "red"},
-        { age : "20", title : "20대", color: "blue"},
-        { age : "30", title : "30대", color: "orange"},
-        { age : "40", title : "40대", color: "pink"},
-        { age : "50", title : "50대", color: "black"}];
+        { value : "10", label : "10대", color: "red"},
+        { value : "20", label : "20대", color: "blue"},
+        { value : "30", label : "30대", color: "orange"},
+        { value : "40", label : "40대", color: "pink"},
+        { value : "50", label : "50대", color: "black"}];
 
     const [checkAges, setCheckAges] = useState<String[]>([]);
-    const [isChecked, setIsChecked] = useState<boolean>(false);
-
-    const checkedItemHandler = (value: string, isChecked: boolean) => {
-        if (isChecked) {
-            setCheckAges((prev) => [...prev, value]);
-        } else {
-            setCheckAges((prev) => prev.filter((item) => item !== value));
-        }
-    }
-
-    const checkHandler = (e: React.ChangeEvent<HTMLInputElement>, value: string) => {
-        setIsChecked(!isChecked);
-        checkedItemHandler(value, e.target.checked);
-        // console.log(checkAges);
-    };
 
     const handleChart = useCallback(async () => {
         try {
@@ -76,104 +69,112 @@ const Home: FC = () => {
 
     }, [startDate, endDate, timeUnit, category, keyword, device,  gender, checkAges, trend]);
 
+    const onDateChange = (
+        value: RangePickerProps['value'],
+        dateString: [string, string] | string,
+      ) => {
+        setStartDate(dateString[0]);
+        setEndDate(dateString[1]);
+    };
+
+    const handleChange = (value: string[]) => {
+        setCheckAges(value);
+        console.log(checkAges)
+    };
+      
     return (
         <>
             <PageDataInfo>
-                <div className='items'>
-                    <div>시작일자:</div>
-                    <input
-                        placeholder="20XX-XX-XX"
-                        value= {startDate}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            setStartDate(e.target.value)
-                        }}
-                    />
-                </div>
-    
-                <div className='items'>
-                    <div>종료일자:</div>
-                    <input
-                        placeholder="20XX-XX-XX"
-                        value={endDate}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                            setEndDate(e.target.value)
-                        }}
-                    />                
-                </div>
-                <div className='items'>
-                    <div>카테고리:</div>
-                    <input
+                <Space.Compact>
+                    <Select defaultValue="1"><Option value="1">조회기간</Option></Select>
+                    <DatePicker.RangePicker onChange = {onDateChange} style={{ width: '100%' }} />
+                </Space.Compact>
+
+                <Space.Compact>
+                    <Input
+                        addonBefore="카테고리"
                         value={category}
+                        placeholder='카테고리를 입력하세요'
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             setCategory(e.target.value)
                         }}
                     />                   
-                </div>
+                </Space.Compact>
     
-                <div className='items'>
-                    <div>키워드:</div>
-                    <input
+                <Space.Compact>
+                    <Input
+                        addonBefore="키워드"
                         value={keyword}
+                        placeholder='키워드를 입력하세요'
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             setKeyword(e.target.value)
                         }}
                     />   
-                </div>
+                </Space.Compact>
             </PageDataInfo>
+
+
             <PageDataSubInfo>
-                <select
-                    value={timeUnit}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                        setTimeUnit(e.target.value);
+                <Select
+                    onChange={(value: string) => {
+                        setTimeUnit(value);
                     }}
-                >
-                    <option value = "">timeUnit</option>
-                    <option value = "date">date</option>
-                    <option value = "week">week</option>
-                    <option value = "month">month</option>
-                </select>    
-                <select
-                    value={gender}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                        setGender(e.target.value);
+                    style={{width : 120}}
+                    placeholder  = "구간 단위"
+                    options = {[
+                        {
+                            label: "구간 단위",
+                            options: [
+                                {value: "date", label:  "date"},
+                                {value: "week", label:  "week"},
+                                {value: "month", label:  "month"},
+                            ],
+                        },
+                    ]}
+                />
+                <Select
+                    onChange={(value: string) => {
+                        setGender(value);
+                        console.log(gender);
                     }}
-                >                    
-                    <option>gender</option>
-                    <option value = "m">남성</option>
-                    <option value = "f">여성</option>
-                </select>    
-                <select
-                    value={device}
-                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                        setDevice(e.target.value);
+                    style={{width : 120}}
+                    placeholder = "성별"
+                    options = {[
+                        {value: "", label: "설정 안 함"},
+                        {value: "m",  label: '남성'},
+                        {value: "f",  label: '여성'},
+                    ]}
+                />   
+                <Select
+                    onChange={(value: string) => {
+                        setDevice(value);
                     }}
-                >                      
-                    <option value = "">device</option>
-                    <option value = "pc">pc</option>
-                    <option value = "mo">모바일</option>
-                </select>   
-                <>
-                {ages.map((item) =>  (
-                    <label key  =  {item.age}>
-                        <input
-                            type = "checkbox"
-                            id = {item.age}
-                            checked={checkAges.includes(item.age)}
-                            onChange = {(e) => checkHandler(e, item.age)}            
-                        />
-                        {item.title}
-                    </label>
-                ))}
-                </>
-                <button onClick={handleChart}>
-                    조회
-                </button>
+                    style={{width: 120}}
+                    placeholder = "기기"
+                    options = {[
+                        {value: "", label : "설정 안 함"},
+                        {value: "pc", label: "PC"},
+                        {value: "mo", label: "모바일"}
+                    ]}
+                /> 
+                <Space style={{ width: '25%' }} direction="vertical">
+                    <Select
+                        mode="multiple"
+                        allowClear
+                        style={{ width: '100%' }}
+                        placeholder="검색 사용자의 연령별 트렌드 조회"
+                        onChange = {handleChange}            
+                        options={ages}
+                    />
+                </Space>
+                <Button type = "primary" onClick={handleChart}>조회</Button>
             </PageDataSubInfo>
+
             <PageGraphContents>
                 <ResponsiveContainer width="100%" aspect = {3/1}>
                     <LineChart data={trend} >
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="period" type="category" allowDuplicatedCategory={false} />
+                        <XAxis dataKey="period" allowDuplicatedCategory={false} />
                         <YAxis />
                         <Tooltip />
                         <Legend />
@@ -186,7 +187,7 @@ const Home: FC = () => {
                                     dataKey="ratio"
                                     name={`${age}대`}
                                     stroke={
-                                        ages.find(item => item.age === age)?.color
+                                        ages.find(item => item.value === age)?.color
                                     }
                                     data={ageData}
                                 />

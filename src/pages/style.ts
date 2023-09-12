@@ -2,14 +2,9 @@ import styled from "styled-components";
 
 const PageDataInfo = styled.div`
     display: flex;
-    gap: 10px;
+    gap: 30px;
     justify-content: center;
     margin: 30px auto;
-
-    .items {
-        display: flex;
-        gap: 10px;
-    }
 `;
 
 const PageDataSubInfo = styled.div`
