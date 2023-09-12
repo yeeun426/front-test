@@ -1,7 +1,8 @@
 import React, { FC, useState, useCallback } from 'react';
 import {PageDataInfo, PageDataSubInfo, PageGraphContents} from "./style"
 import { postChart } from '../api/index';
-import { ShoppingData, APIResponse } from '../interfaces/commonResponse';
+import { ShoppingData, APIResponse, Result, DataItem } from '../interfaces/commonResponse';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const Home: FC = () => {
     const [startDate, setStartDate] = useState<string>("");
@@ -12,12 +13,14 @@ const Home: FC = () => {
     const [device, setDevice] = useState<string>("");
     const [gender, setGender] = useState<string>("");
 
+    const [trend, setTrend] = useState<DataItem[]>([]);
+
     const ages = [
-        { age : "10", title : "10~19세"},
-        { age : "20", title : "20~29세"},
-        { age : "30", title : "30~39세"},
-        { age : "40", title : "40~49세"},
-        { age : "50", title : "50~59세"}];
+        { age : "10", title : "10대", color: "red"},
+        { age : "20", title : "20대", color: "blue"},
+        { age : "30", title : "30대", color: "orange"},
+        { age : "40", title : "40대", color: "pink"},
+        { age : "50", title : "50대", color: "black"}];
 
     const [checkAges, setCheckAges] = useState<String[]>([]);
     const [isChecked, setIsChecked] = useState<boolean>(false);
@@ -33,30 +36,45 @@ const Home: FC = () => {
     const checkHandler = (e: React.ChangeEvent<HTMLInputElement>, value: string) => {
         setIsChecked(!isChecked);
         checkedItemHandler(value, e.target.checked);
-    
-        console.log(value, e.target.checked);
-        debugger
-        console.log(checkAges)
+        console.log(checkAges);
     };
 
     const handleChart = useCallback(async () => {
         try {
             const params: ShoppingData = {
-                startDate: startDate,
-                endDate: endDate,
-                timeUnit: timeUnit,
-                category: category,
-                keyword: keyword,
-                device: device,
-                gender: gender,
+                startDate: "2020-11-03",
+                endDate: "2021-01-23",
+                timeUnit: "month",
+                category: "50000000",
+                keyword: "정장",
+                device: "",
+                gender: "",
                 ages: checkAges
             }
+            // const params: ShoppingData = {
+            //     startDate: startDate,
+            //     endDate: endDate,
+            //     timeUnit: timeUnit,
+            //     category: category,
+            //     keyword: keyword,
+            //     device: device,
+            //     gender: gender,
+            //     ages: checkAges
+            // }
+
             const data = await postChart<APIResponse>(params);
-            console.log(data);
+            
+            if (data) {
+                data.results.forEach((result: Result) => {
+                    setTrend(result.data);
+                });
+                console.log(trend);            
+            }
         } catch (error) {
             console.error(error);
         }
-    }, [startDate, endDate, category, timeUnit, keyword, device,  gender, ages]); // 이 값들이 변경될 때 컴포넌트를 다시 렌더링하도록 의존성을 추가
+
+    }, [startDate, endDate, timeUnit, category, keyword, device,  gender, checkAges, trend]);
 
     return (
         <>
@@ -64,7 +82,7 @@ const Home: FC = () => {
                 <div className='items'>
                     <div>시작일자:</div>
                     <input
-                        placeholder="20XX-XX-XX 형태로 입력해주세요."
+                        placeholder="20XX-XX-XX"
                         value= {startDate}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             setStartDate(e.target.value)
@@ -75,18 +93,16 @@ const Home: FC = () => {
                 <div className='items'>
                     <div>종료일자:</div>
                     <input
-                        placeholder="20XX-XX-XX 형태로 입력해주세요."
+                        placeholder="20XX-XX-XX"
                         value={endDate}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             setEndDate(e.target.value)
                         }}
                     />                
                 </div>
-    
                 <div className='items'>
                     <div>카테고리:</div>
                     <input
-                        placeholder="20XX-XX-XX 형태로 입력해주세요."
                         value={category}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             setCategory(e.target.value)
@@ -154,7 +170,30 @@ const Home: FC = () => {
                 </button>
             </PageDataSubInfo>
             <PageGraphContents>
-    
+                <ResponsiveContainer width="100%" aspect = {4/1}>
+                    <LineChart data={trend} >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey= "period" tick/>
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        {checkAges.map((age) => {
+                            const ageData = trend.filter((item) => item.group === age);
+                            return (
+                                <Line
+                                    type="monotone"
+                                    key={Number(age)}
+                                    dataKey="ratio"
+                                    name={`${age}대`}
+                                    stroke={
+                                        ages.find(item => item.age === age)?.color
+                                    }
+                                    data={ageData}
+                                />
+                            );
+                        })}
+                    </LineChart>
+                </ResponsiveContainer>
             </PageGraphContents>
         </>
     );

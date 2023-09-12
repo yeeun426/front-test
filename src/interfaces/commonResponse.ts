@@ -1,11 +1,11 @@
 // api에서 내려주는 응답구조
-interface DataItem {
+export interface DataItem {
     period: string;
     group: string;
     ratio: number;
 }
   
-interface Result {
+export interface Result {
     title: string;
     keyword: string[];
     data: DataItem[];

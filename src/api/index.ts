@@ -2,7 +2,6 @@ import axios,{ Axios, AxiosResponse } from "axios";
 import { ShoppingData } from '../interfaces/commonResponse';
 
 // axios 인스턴스 생성
-// create 메서드 : header
 const Client: Axios = axios.create({
     url: `${process.env.REACT_APP_NAVER_SHOPPING_API_URL}`,
     headers: {
