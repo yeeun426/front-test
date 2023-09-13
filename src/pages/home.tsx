@@ -1,7 +1,13 @@
-import React, { FC, useState, useCallback } from 'react';
+import React, { FC, useState, useCallback, useEffect } from 'react';
 import {PageDataInfo, PageDataSubInfo, PageGraphContents} from "./style"
 import { postChart } from '../api/index';
 import { ShoppingData, APIResponse, Result, DataItem } from '../interfaces/commonResponse';
+
+// redux
+import { useSelector, useDispatch } from 'react-redux';
+import { RootReducerType } from '../reducers/index'; 
+import { updateInputValues } from '../reducers/counter'; 
+import {persistor} from "../reducers/store"
 
 // Chart Library(recharts)
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -9,17 +15,21 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 // Antd
 import {Button,  Space, Select, Input, DatePicker} from 'antd';
 import type { RangePickerProps } from 'antd/es/date-picker';
+import { time } from 'console';
 
 const {Option} = Select;
 
 const Home: FC = () => {
-    const [startDate, setStartDate] = useState<string>("");
-    const [endDate, setEndDate] = useState<string>("");
-    const [timeUnit, setTimeUnit] = useState<string>("");
-    const [category, setCategory] = useState<string>("");
-    const [keyword, setKeyword] = useState<string>("");
-    const [device, setDevice] = useState<string>("");
-    const [gender, setGender] = useState<string>("");
+    const inputValues = useSelector((state: RootReducerType) => state.inputValues);
+    const dispatch = useDispatch();
+
+    const [startDate, setStartDate] = useState<string>(inputValues.startDate || '');
+    const [endDate, setEndDate] = useState<string>(inputValues.endDate || '');
+    const [timeUnit, setTimeUnit] = useState<string>(inputValues.timeUnit || '');
+    const [category, setCategory] = useState<string>(inputValues.category || '');
+    const [keyword, setKeyword] = useState<string>(inputValues.keyword || '');
+    const [device, setDevice] = useState<string>(inputValues.device || '');
+    const [gender, setGender] = useState<string>(inputValues.gender || '');
 
     const [trend, setTrend] = useState<DataItem[]>([]);
 
@@ -30,35 +40,51 @@ const Home: FC = () => {
         { value : "40", label : "40대", color: "pink"},
         { value : "50", label : "50대", color: "black"}];
 
-    const [checkAges, setCheckAges] = useState<String[]>([]);
+    const [checkAges, setCheckAges] = useState<string[]>(inputValues.ages || []);
 
+    useEffect(() => {
+        // 컴포넌트가 마운트될 때 로컬 스토리지에서 저장된 값 복원
+        persistor.purge(); // 이 부분을 추가하여 로컬 스토리지를 지우지 않도록 변경
+        const savedInputValues = localStorage.getItem('persist:root');
+        if (savedInputValues) {
+          const parsedInputValues = JSON.parse(savedInputValues);
+          dispatch(updateInputValues(parsedInputValues.inputValues));
+        }
+    }, [dispatch]);
+
+    useEffect(() => {
+        // Redux 상태가 변경될 때마다 로컬 스토리지에 저장
+        localStorage.setItem('persist:root', JSON.stringify({ inputValues }));
+        console.log(localStorage);
+    }, [inputValues, dispatch]);
+    
     const handleChart = useCallback(async () => {
         try {
             const params: ShoppingData = {
-                startDate: "2020-11-03",
-                endDate: "2021-01-23",
-                timeUnit: "month",
-                category: "50000000",
-                keyword: "정장",
-                device: "",
-                gender: "",
-                ages: checkAges
-            }
-            // const params: ShoppingData = {
-            //     startDate: startDate,
-            //     endDate: endDate,
-            //     timeUnit: timeUnit,
-            //     category: category,
-            //     keyword: keyword,
-            //     device: device,
-            //     gender: gender,
+            //     startDate: "2020-11-03",
+            //     endDate: "2021-01-23",
+            //     timeUnit: "month",
+            //     category: "50000000",
+            //     keyword: "정장",
+            //     device: "",
+            //     gender: "",
             //     ages: checkAges
             // }
+            // const params: ShoppingData = {
+                startDate: startDate,
+                endDate: endDate,
+                timeUnit: timeUnit,
+                category: category,
+                keyword: keyword,
+                device: device,
+                gender: gender,
+                ages: checkAges
+            }
 
             const data = await postChart<APIResponse>(params);
             
             if (data) {
-                data.results.forEach((result: Result) => {
+                data.results.map((result: Result) => {
                     setTrend(result.data);
                 });
                 console.log(trend);            
@@ -79,6 +105,7 @@ const Home: FC = () => {
 
     const handleChange = (value: string[]) => {
         setCheckAges(value);
+        dispatch(updateInputValues({ ...inputValues, ages: value }));
         console.log(checkAges)
     };
       
@@ -97,6 +124,7 @@ const Home: FC = () => {
                         placeholder='카테고리를 입력하세요'
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             setCategory(e.target.value)
+                            dispatch(updateInputValues({ ...inputValues, category: e.target.value }));
                         }}
                     />                   
                 </Space.Compact>
@@ -108,6 +136,7 @@ const Home: FC = () => {
                         placeholder='키워드를 입력하세요'
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             setKeyword(e.target.value)
+                            dispatch(updateInputValues({ ...inputValues, keyword: e.target.value }));
                         }}
                     />   
                 </Space.Compact>
@@ -121,6 +150,7 @@ const Home: FC = () => {
                     }}
                     style={{width : 120}}
                     placeholder  = "구간 단위"
+                    value = {timeUnit}
                     options = {[
                         {
                             label: "구간 단위",
@@ -139,6 +169,7 @@ const Home: FC = () => {
                     }}
                     style={{width : 120}}
                     placeholder = "성별"
+                    value = {gender}
                     options = {[
                         {value: "", label: "설정 안 함"},
                         {value: "m",  label: '남성'},
@@ -150,6 +181,7 @@ const Home: FC = () => {
                         setDevice(value);
                     }}
                     style={{width: 120}}
+                    value = {device}
                     placeholder = "기기"
                     options = {[
                         {value: "", label : "설정 안 함"},
@@ -165,6 +197,7 @@ const Home: FC = () => {
                         placeholder="검색 사용자의 연령별 트렌드 조회"
                         onChange = {handleChange}            
                         options={ages}
+                        value = {checkAges}
                     />
                 </Space>
                 <Button type = "primary" onClick={handleChart}>조회</Button>

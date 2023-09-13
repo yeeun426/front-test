@@ -19,12 +19,12 @@ export interface APIResponse {
 }
 
 export interface ShoppingData {
-    startDate: String;
-    endDate: String;
-    timeUnit: String;
-    category: String;
-    keyword: String;
-    device?: String;
-    gender?: String;
-    ages?: String[];
+    startDate: string;
+    endDate: string;
+    timeUnit: string;
+    category: string;
+    keyword: string;
+    device?: string;
+    gender?: string;
+    ages?: string[];
 }
