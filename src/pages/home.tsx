@@ -15,7 +15,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 // Antd
 import {Button,  Space, Select, Input, DatePicker} from 'antd';
 import type { RangePickerProps } from 'antd/es/date-picker';
-import { time } from 'console';
+import dayjs from 'dayjs';
 
 const {Option} = Select;
 
@@ -101,6 +101,7 @@ const Home: FC = () => {
       ) => {
         setStartDate(dateString[0]);
         setEndDate(dateString[1]);
+        dispatch(updateInputValues({ ...inputValues, startDate: dateString[0], endDate: dateString[1] }));
     };
 
     const handleChange = (value: string[]) => {
@@ -114,7 +115,11 @@ const Home: FC = () => {
             <PageDataInfo>
                 <Space.Compact>
                     <Select defaultValue="1"><Option value="1">조회기간</Option></Select>
-                    <DatePicker.RangePicker onChange = {onDateChange} style={{ width: '100%' }} />
+                    { startDate && endDate ?
+                    <DatePicker.RangePicker defaultValue = {[dayjs(startDate), dayjs(endDate)]} onChange = {onDateChange} style={{ width: '100%' }}/>
+                    :
+                    <DatePicker.RangePicker onChange = {onDateChange} style={{ width: '100%' }}/>
+                    }
                 </Space.Compact>
 
                 <Space.Compact>
@@ -142,11 +147,12 @@ const Home: FC = () => {
                 </Space.Compact>
             </PageDataInfo>
 
-
             <PageDataSubInfo>
+                <Space.Compact>
                 <Select
                     onChange={(value: string) => {
                         setTimeUnit(value);
+                        dispatch(updateInputValues({ ...inputValues, timeUnit: value }));
                     }}
                     style={{width : 120}}
                     placeholder  = "구간 단위"
@@ -162,10 +168,11 @@ const Home: FC = () => {
                         },
                     ]}
                 />
+                </Space.Compact>
                 <Select
                     onChange={(value: string) => {
                         setGender(value);
-                        console.log(gender);
+                        dispatch(updateInputValues({ ...inputValues, gender: value }));
                     }}
                     style={{width : 120}}
                     placeholder = "성별"
@@ -179,6 +186,7 @@ const Home: FC = () => {
                 <Select
                     onChange={(value: string) => {
                         setDevice(value);
+                        dispatch(updateInputValues({ ...inputValues, device: value }));
                     }}
                     style={{width: 120}}
                     value = {device}

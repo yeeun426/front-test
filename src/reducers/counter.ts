@@ -18,14 +18,22 @@ export const updateInputValues = (inputValues: ShoppingData) => ({
 
 // 상태 초기값 선언
 const initialState: ShoppingData = {
-    startDate: "2020-11-03",
-    endDate: "2021-01-23",
-    timeUnit: "month",
-    category: "50000000",
+    startDate: "",
+    endDate: "",
+    timeUnit: "",
+    category: "",
     keyword: "",
     device: "",
     gender: "",
     ages: [],
+    // startDate: "2020-11-03",
+    // endDate: "2021-01-23",
+    // timeUnit: "month",
+    // category: "50000000",
+    // keyword: "",
+    // device: "",
+    // gender: "",
+    // ages: [],
 };
   
 // 리듀서
