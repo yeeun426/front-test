@@ -1,7 +1,6 @@
 import React, { FC, useState, useCallback, useEffect } from 'react';
 import {PageDataInfo, PageDataSubInfo, PageGraphContents} from "./style"
-import { postChart } from '../api/index';
-import { ShoppingData, APIResponse, Result, DataItem } from '../interfaces/commonResponse';
+import { ShoppingData } from '../interfaces/commonResponse';
 
 // redux
 import { useSelector, useDispatch } from 'react-redux';
@@ -57,7 +56,6 @@ const Home: FC = () => {
     useEffect(() => {
         // Redux 상태가 변경될 때마다 로컬 스토리지에 저장
         localStorage.setItem('persist:root', JSON.stringify({ inputValues }));
-        console.log(localStorage);
     }, [inputValues, dispatch]);
     
     const handleFetchChart = useCallback(async () => {
@@ -70,22 +68,16 @@ const Home: FC = () => {
                 keyword: keyword,
                 device: device,
                 gender: gender,
-                ages: checkAges
+                ages: checkAges,
+                trend: []
             }
             dispatch(requestChart(params));
-            // const data = await postChart<APIResponse>(params);
-            // if (data) {
-            //     dispatch(handleChart(params));
-            //     data.results.map((result: Result) => {
-            //         setTrend(result.data);
-            //     });
-            //     console.log(trend);            
-            // }
+
         } catch (error) {
             console.error(error);
         }
-
-    }, [dispatch]);
+        console.log(trend);
+    }, [category, checkAges, device, dispatch, endDate, gender, keyword, startDate, timeUnit, trend]);
 
     const onDateChange = (
         value: RangePickerProps['value'],
@@ -213,7 +205,7 @@ const Home: FC = () => {
                         <Tooltip />
                         <Legend />
                         {checkAges.map((age) => {
-                            const ageData = trend.filter((item) => item.group === age);
+                            const ageData = trend.filter((item: any) => item.group === age);
                             return (
                                 <Line
                                     type="monotone"

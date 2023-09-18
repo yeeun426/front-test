@@ -6,8 +6,9 @@ import { ShoppingData, APIResponse } from '../interfaces/commonResponse';
 function* fetchChartData(action: any) {
   try {
     const params: ShoppingData = action.payload;
+    console.log(params);
     const data: APIResponse = yield call(postChart, params);
-
+    console.log(data);
     if (data) {
       yield put({ type: API_SUCCESS, data });
     }

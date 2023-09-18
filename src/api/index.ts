@@ -15,7 +15,6 @@ export const postChart = async<T> (params: ShoppingData): Promise<T|null> => {
     try {
         const url = `${Client.defaults.url}`
         const { status, data }: AxiosResponse<T>= await Client.post(url, params);
-        console.log(data);
         return status <  500 ? data : null;    
 
     } catch (error) {

@@ -2,14 +2,14 @@ import {ShoppingData, DataItem} from "../interfaces/commonResponse"
 
 // 상태 초기값 선언
 const initialState: ShoppingData = {
-    startDate: "",
-    endDate: "",
-    timeUnit: "",
-    category: "",
-    keyword: "",
+    startDate: "2020-11-03",
+    endDate: "2021-01-23",
+    timeUnit: "month",
+    category: "50000000",
+    keyword: "정장",
     device: "",
     gender: "",
-    ages: [],
+    ages: ["10","20"],
     trend: [] as DataItem[], // 'trend' 필드를 'DataItem' 배열로 초기화
 };
 
@@ -38,12 +38,14 @@ export const requestChart = (data: ShoppingData) => ({
 })
   
 // 리듀서
-const inputValuesReducer = (state = initialState, action: { type: string; payload: ShoppingData; action?: string }) => {
+const inputValuesReducer = (state = initialState, action: {
+    data: any; type: string; payload: ShoppingData; action?: string 
+}) => {
     switch (action.type) {
         case API_SUCCESS:
             return {
                 ...state,
-                trend: action.payload.trend,
+                trend: action.data.results[0].data,
             }
             
         case REQUEST_CHART:
