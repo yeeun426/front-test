@@ -27,4 +27,5 @@ export interface ShoppingData {
     device?: string;
     gender?: string;
     ages?: string[];
+    trend?: DataItem[];
 }

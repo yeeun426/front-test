@@ -5,8 +5,8 @@ import { ShoppingData, APIResponse, Result, DataItem } from '../interfaces/commo
 
 // redux
 import { useSelector, useDispatch } from 'react-redux';
-import { RootReducerType } from '../reducers/index'; 
-import { updateInputValues } from '../reducers/counter'; 
+import { RootReducerType } from '../reducers/reducer'; 
+import { updateInputValues, requestChart } from '../reducers/action'; 
 import {persistor} from "../reducers/store"
 
 // Chart Library(recharts)
@@ -20,8 +20,10 @@ import dayjs from 'dayjs';
 const {Option} = Select;
 
 const Home: FC = () => {
-    const inputValues = useSelector((state: RootReducerType) => state.inputValues);
     const dispatch = useDispatch();
+
+    const inputValues = useSelector((state: RootReducerType) => state.inputValues);
+    const trend = useSelector((state: RootReducerType) => state.inputValues.trend);
 
     const [startDate, setStartDate] = useState<string>(inputValues.startDate || '');
     const [endDate, setEndDate] = useState<string>(inputValues.endDate || '');
@@ -31,7 +33,7 @@ const Home: FC = () => {
     const [device, setDevice] = useState<string>(inputValues.device || '');
     const [gender, setGender] = useState<string>(inputValues.gender || '');
 
-    const [trend, setTrend] = useState<DataItem[]>([]);
+    // const [trend, setTrend] = useState<DataItem[]>([]);
 
     const ages = [
         { value : "10", label : "10대", color: "red"},
@@ -58,19 +60,9 @@ const Home: FC = () => {
         console.log(localStorage);
     }, [inputValues, dispatch]);
     
-    const handleChart = useCallback(async () => {
+    const handleFetchChart = useCallback(async () => {
         try {
             const params: ShoppingData = {
-            //     startDate: "2020-11-03",
-            //     endDate: "2021-01-23",
-            //     timeUnit: "month",
-            //     category: "50000000",
-            //     keyword: "정장",
-            //     device: "",
-            //     gender: "",
-            //     ages: checkAges
-            // }
-            // const params: ShoppingData = {
                 startDate: startDate,
                 endDate: endDate,
                 timeUnit: timeUnit,
@@ -80,20 +72,20 @@ const Home: FC = () => {
                 gender: gender,
                 ages: checkAges
             }
-
-            const data = await postChart<APIResponse>(params);
-            
-            if (data) {
-                data.results.map((result: Result) => {
-                    setTrend(result.data);
-                });
-                console.log(trend);            
-            }
+            dispatch(requestChart(params));
+            // const data = await postChart<APIResponse>(params);
+            // if (data) {
+            //     dispatch(handleChart(params));
+            //     data.results.map((result: Result) => {
+            //         setTrend(result.data);
+            //     });
+            //     console.log(trend);            
+            // }
         } catch (error) {
             console.error(error);
         }
 
-    }, [startDate, endDate, timeUnit, category, keyword, device,  gender, checkAges, trend]);
+    }, [dispatch]);
 
     const onDateChange = (
         value: RangePickerProps['value'],
@@ -208,10 +200,11 @@ const Home: FC = () => {
                         value = {checkAges}
                     />
                 </Space>
-                <Button type = "primary" onClick={handleChart}>조회</Button>
+                <Button type = "primary" onClick={handleFetchChart}>조회</Button>
             </PageDataSubInfo>
 
             <PageGraphContents>
+            {trend?.length ? (
                 <ResponsiveContainer width="100%" aspect = {3/1}>
                     <LineChart data={trend} >
                         <CartesianGrid strokeDasharray="3 3" />
@@ -236,6 +229,9 @@ const Home: FC = () => {
                         })}
                     </LineChart>
                 </ResponsiveContainer>
+                ) : (
+                    <div>no data available</div>
+                )}
             </PageGraphContents>
         </>
     );
