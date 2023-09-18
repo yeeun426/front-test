@@ -6,7 +6,6 @@ import { ShoppingData } from '../interfaces/commonResponse';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootReducerType } from '../reducers/reducer'; 
 import { updateInputValues, requestChart } from '../reducers/action'; 
-import {persistor} from "../reducers/store"
 
 // Chart Library(recharts)
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -32,9 +31,9 @@ const Home: FC = () => {
     const [device, setDevice] = useState<string>(inputValues.device || '');
     const [gender, setGender] = useState<string>(inputValues.gender || '');
 
-    // const [trend, setTrend] = useState<DataItem[]>([]);
+    const [age, setAge] = useState<string[]>(inputValues.ages || []);
 
-    const ages = [
+    const agelist = [
         { value : "10", label : "10대", color: "red"},
         { value : "20", label : "20대", color: "blue"},
         { value : "30", label : "30대", color: "orange"},
@@ -45,7 +44,6 @@ const Home: FC = () => {
 
     useEffect(() => {
         // 컴포넌트가 마운트될 때 로컬 스토리지에서 저장된 값 복원
-        persistor.purge(); // 이 부분을 추가하여 로컬 스토리지를 지우지 않도록 변경
         const savedInputValues = localStorage.getItem('persist:root');
         if (savedInputValues) {
           const parsedInputValues = JSON.parse(savedInputValues);
@@ -54,12 +52,13 @@ const Home: FC = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        // Redux 상태가 변경될 때마다 로컬 스토리지에 저장
         localStorage.setItem('persist:root', JSON.stringify({ inputValues }));
     }, [inputValues, dispatch]);
     
     const handleFetchChart = useCallback(async () => {
         try {
+            setAge(checkAges);
+
             const params: ShoppingData = {
                 startDate: startDate,
                 endDate: endDate,
@@ -91,7 +90,6 @@ const Home: FC = () => {
     const handleChange = (value: string[]) => {
         setCheckAges(value);
         dispatch(updateInputValues({ ...inputValues, ages: value }));
-        console.log(checkAges)
     };
       
     return (
@@ -186,9 +184,9 @@ const Home: FC = () => {
                         mode="multiple"
                         allowClear
                         style={{ width: '100%' }}
-                        placeholder="검색 사용자의 연령별 트렌드 조회"
+                        placeholder="사용자의 연령별 트렌드 조회"
                         onChange = {handleChange}            
-                        options={ages}
+                        options={agelist}
                         value = {checkAges}
                     />
                 </Space>
@@ -196,7 +194,7 @@ const Home: FC = () => {
             </PageDataSubInfo>
 
             <PageGraphContents>
-            {trend?.length ? (
+            {trend?.length &&
                 <ResponsiveContainer width="100%" aspect = {3/1}>
                     <LineChart data={trend} >
                         <CartesianGrid strokeDasharray="3 3" />
@@ -204,7 +202,7 @@ const Home: FC = () => {
                         <YAxis />
                         <Tooltip />
                         <Legend />
-                        {checkAges.map((age) => {
+                        {age.map((age) => {
                             const ageData = trend.filter((item: any) => item.group === age);
                             return (
                                 <Line
@@ -213,7 +211,7 @@ const Home: FC = () => {
                                     dataKey="ratio"
                                     name={`${age}대`}
                                     stroke={
-                                        ages.find(item => item.value === age)?.color
+                                        agelist.find(item => item.value === age)?.color
                                     }
                                     data={ageData}
                                 />
@@ -221,9 +219,7 @@ const Home: FC = () => {
                         })}
                     </LineChart>
                 </ResponsiveContainer>
-                ) : (
-                    <div>no data available</div>
-                )}
+                }
             </PageGraphContents>
         </>
     );
