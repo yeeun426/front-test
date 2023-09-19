@@ -4,7 +4,7 @@ import { ShoppingData } from '../interfaces/commonResponse';
 
 // redux
 import { useSelector, useDispatch } from 'react-redux';
-import { RootReducerType } from '../reducers/reducer'; 
+import { RootState } from '../reducers/reducer'; 
 import { updateInputValues, requestChart } from '../reducers/action'; 
 
 // Chart Library(recharts)
@@ -20,8 +20,8 @@ const {Option} = Select;
 const Home: FC = () => {
     const dispatch = useDispatch();
 
-    const inputValues = useSelector((state: RootReducerType) => state.inputValues);
-    const trend = useSelector((state: RootReducerType) => state.inputValues.trend);
+    const inputValues = useSelector((state: RootState) => state.inputValues);
+    const trend = useSelector((state: RootState) => state.inputValues.trend);
 
     const [startDate, setStartDate] = useState<string>(inputValues.startDate || '');
     const [endDate, setEndDate] = useState<string>(inputValues.endDate || '');
@@ -43,11 +43,11 @@ const Home: FC = () => {
     const [checkAges, setCheckAges] = useState<string[]>(inputValues.ages || []);
 
     useEffect(() => {
-        // 컴포넌트가 마운트될 때 로컬 스토리지에서 저장된 값 복원
-        const savedInputValues = localStorage.getItem('persist:root');
-        if (savedInputValues) {
-          const parsedInputValues = JSON.parse(savedInputValues);
-          dispatch(updateInputValues(parsedInputValues.inputValues));
+        const persistInputValues = localStorage.getItem('persist:root');
+        if (persistInputValues && persistInputValues.length < 100) {
+            console.log("음")
+            const savedInputValues = JSON.parse(persistInputValues);
+            dispatch(updateInputValues(savedInputValues.inputValues));
         }
     }, [dispatch]);
 
@@ -55,7 +55,7 @@ const Home: FC = () => {
         localStorage.setItem('persist:root', JSON.stringify({ inputValues }));
     }, [inputValues, dispatch]);
     
-    const handleFetchChart = useCallback(async () => {
+    const handleChart = useCallback(async () => {
         try {
             setAge(checkAges);
 
@@ -67,16 +67,14 @@ const Home: FC = () => {
                 keyword: keyword,
                 device: device,
                 gender: gender,
-                ages: checkAges,
-                trend: []
+                ages: checkAges
             }
             dispatch(requestChart(params));
 
         } catch (error) {
             console.error(error);
         }
-        console.log(trend);
-    }, [category, checkAges, device, dispatch, endDate, gender, keyword, startDate, timeUnit, trend]);
+    }, [category, checkAges, device, dispatch, endDate, gender, keyword, startDate, timeUnit]);
 
     const onDateChange = (
         value: RangePickerProps['value'],
@@ -190,11 +188,11 @@ const Home: FC = () => {
                         value = {checkAges}
                     />
                 </Space>
-                <Button type = "primary" onClick={handleFetchChart}>조회</Button>
+                <Button type = "primary" onClick={handleChart}>조회</Button>
             </PageDataSubInfo>
 
             <PageGraphContents>
-            {trend?.length &&
+            {trend?.length > 0 &&
                 <ResponsiveContainer width="100%" aspect = {3/1}>
                     <LineChart data={trend} >
                         <CartesianGrid strokeDasharray="3 3" />

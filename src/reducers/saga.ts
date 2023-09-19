@@ -1,14 +1,13 @@
 import { put, takeLatest, all, call } from 'redux-saga/effects';
-import { REQUEST_CHART, API_SUCCESS, API_ERROR } from './action'; // 액션 및 액션 타입 import
-import { postChart } from '../api/index'; // API 호출 함수 import
+import { REQUEST_CHART, API_SUCCESS, API_ERROR } from './action';
+import { postChart } from '../api/index';
 import { ShoppingData, APIResponse } from '../interfaces/commonResponse';
 
-function* fetchChartData(action: any) {
+function* sagaChartData(action: any) {
   try {
     const params: ShoppingData = action.payload;
-    console.log(params);
     const data: APIResponse = yield call(postChart, params);
-    console.log(data);
+
     if (data) {
       yield put({ type: API_SUCCESS, data });
     }
@@ -18,12 +17,12 @@ function* fetchChartData(action: any) {
   }
 }
 
-function* watchFetchChartData() {
-  yield takeLatest(REQUEST_CHART, fetchChartData);
+function* watchSagaChartData() {
+  yield takeLatest(REQUEST_CHART, sagaChartData);
 }
 
 export default function* rootSaga() {
   yield all([
-    watchFetchChartData(),
+    watchSagaChartData(),
   ]);
 }

@@ -1,15 +1,14 @@
 import {ShoppingData, DataItem} from "../interfaces/commonResponse"
 
-// 상태 초기값 선언
-const initialState: ShoppingData = {
+export const initialState: ShoppingData = {
     startDate: "2020-11-03",
     endDate: "2021-01-23",
-    timeUnit: "month",
-    category: "50000000",
-    keyword: "정장",
+    timeUnit: "",
+    category: "",
+    keyword: "",
     device: "",
     gender: "",
-    ages: ["10","20"],
+    ages: [],
     trend: [] as DataItem[], // 'trend' 필드를 'DataItem' 배열로 초기화
 };
 
@@ -20,13 +19,7 @@ export const REQUEST_CHART = 'REQUEST_CHART';
 export const API_SUCCESS = 'API_SUCCESS';
 export const API_ERROR = 'API_ERROR';
 
-// 액션 구조
-export interface UpdateInputValuesAction {
-    type: typeof UPDATE_INPUT_VALUES;
-    payload: ShoppingData;
-}
-
-// 액션 생성자 함수 작성
+// 액션 생성자 함수
 export const updateInputValues = (inputValues: ShoppingData) => ({
     type: UPDATE_INPUT_VALUES,
     payload: inputValues,
@@ -39,7 +32,7 @@ export const requestChart = (data: ShoppingData) => ({
   
 // 리듀서
 const inputValuesReducer = (state = initialState, action: {
-    data: any; type: string; payload: ShoppingData; action?: string 
+    data: any; type: string; payload: ShoppingData;
 }) => {
     switch (action.type) {
         case API_SUCCESS:
