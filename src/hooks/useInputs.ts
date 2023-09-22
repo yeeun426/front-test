@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { updateInputValues } from '@reducers/action';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '@reducers/reducer';
+import { RootState } from '@reducers/reducer'; // eslint-disable-line no-unused-vars
 
 function useDeviceInput(
   initialValue: string,
@@ -14,7 +14,7 @@ function useDeviceInput(
     (value: string) => {
       setDevice(value);
       dispatch(updateInputValues({ ...inputValues, device: value }));
-      console.log(dispatch);
+      console.log(device);
     },
     [dispatch, updateInputValues, inputValues],
   );

@@ -21,4 +21,12 @@ module.exports = {
     ecmaVersion: 'latest',
   },
   rules: {},
+  settings: {
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx'],
+    },
+    'import/resolver': {
+      typescript: {},
+    },
+  },
 };
