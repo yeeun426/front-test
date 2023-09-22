@@ -1,7 +1,7 @@
 import React, { FC, useState, useCallback, useEffect } from 'react';
 import { PageDataInfo, PageDataSubInfo, PageGraphContents } from './style';
 import { ShoppingData } from '@interfaces/commonResponse';
-
+import useDeviceInput from '@hooks/useInputs';
 // redux
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@reducers/reducer';
@@ -39,8 +39,10 @@ const Home: FC = () => {
   const [timeUnit, setTimeUnit] = useState<string>(inputValues.timeUnit || '');
   const [category, setCategory] = useState<string>(inputValues.category || '');
   const [keyword, setKeyword] = useState<string>(inputValues.keyword || '');
-  const [device, setDevice] = useState<string>(inputValues.device || '');
+  // const [device, setDevice] = useInputs<string>(inputValues.device || '');
   const [gender, setGender] = useState<string>(inputValues.gender || '');
+
+  const [device, handleDeviceChange] = useDeviceInput(inputValues.device || '');
 
   const [age, setAge] = useState<string[]>(inputValues.ages || []);
 
@@ -203,10 +205,7 @@ const Home: FC = () => {
           ]}
         />
         <Select
-          onChange={(value: string) => {
-            setDevice(value);
-            dispatch(updateInputValues({ ...inputValues, device: value }));
-          }}
+          onChange={(value: string) => handleDeviceChange(value)}
           style={{ width: 120 }}
           value={device}
           placeholder="기기"
