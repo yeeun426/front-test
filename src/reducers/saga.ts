@@ -1,7 +1,7 @@
 import { put, takeLatest, all, call } from 'redux-saga/effects';
-import { REQUEST_CHART, API_SUCCESS, API_ERROR } from './action';
-import { postChart } from '../api/index';
+import postChart from '@api/index';
 import { ShoppingData, APIResponse } from '@interfaces/commonResponse';
+import { REQUEST_CHART, API_SUCCESS, API_ERROR } from '@reducers/action';
 
 function* sagaChartData(action: any) {
   try {

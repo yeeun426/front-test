@@ -1,5 +1,4 @@
 import React, { FC, useState, useCallback, useEffect } from 'react';
-import { PageDataInfo, PageDataSubInfo, PageGraphContents } from './style';
 import { ShoppingData } from '@interfaces/commonResponse';
 import useDeviceInput from '@hooks/useInputs';
 // redux
@@ -22,10 +21,13 @@ import {
 // Antd
 import { Button, Space, Select, Input, DatePicker } from 'antd';
 import type { RangePickerProps } from 'antd/es/date-picker';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from 'dayjs';
+import { PageDataInfo, PageDataSubInfo, PageGraphContents } from './style';
 
 const { Option } = Select;
 
+// eslint-disable-next-line react/function-component-definition
 const Home: FC = () => {
   const dispatch = useDispatch();
 
@@ -73,13 +75,13 @@ const Home: FC = () => {
       setAge(checkAges);
 
       const params: ShoppingData = {
-        startDate: startDate,
-        endDate: endDate,
-        timeUnit: timeUnit,
-        category: category,
-        keyword: keyword,
-        device: device,
-        gender: gender,
+        startDate,
+        endDate,
+        timeUnit,
+        category,
+        keyword,
+        device,
+        gender,
         ages: checkAges,
       };
       dispatch(requestChart(params));
@@ -240,15 +242,19 @@ const Home: FC = () => {
               <YAxis />
               <Tooltip />
               <Legend />
-              {age.map((age) => {
-                const ageData = trend.filter((item: any) => item.group === age);
+              {age.map((ageItem) => {
+                const ageData = trend.filter(
+                  (item: any) => item.group === ageItem,
+                );
                 return (
                   <Line
                     type="monotone"
-                    key={Number(age)}
+                    key={Number(ageItem)}
                     dataKey="ratio"
-                    name={`${age}대`}
-                    stroke={agelist.find((item) => item.value === age)?.color}
+                    name={`${ageItem}대`}
+                    stroke={
+                      agelist.find((item) => item.value === ageItem)?.color
+                    }
                     data={ageData}
                   />
                 );

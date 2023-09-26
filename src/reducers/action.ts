@@ -1,3 +1,4 @@
+/* eslint-disable default-param-last */
 import { ShoppingData, DataItem } from '@interfaces/commonResponse';
 
 export const initialState: ShoppingData = {

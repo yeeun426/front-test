@@ -11,7 +11,7 @@ const Client: Axios = axios.create({
   },
 });
 
-export const postChart = async <T>(params: ShoppingData): Promise<T | null> => {
+const postChart = async <T>(params: ShoppingData): Promise<T | null> => {
   try {
     const url = `${Client.defaults.url}`;
     const { status, data }: AxiosResponse<T> = await Client.post(url, params);
@@ -21,3 +21,5 @@ export const postChart = async <T>(params: ShoppingData): Promise<T | null> => {
     throw new Error('Failed to create user');
   }
 };
+
+export default postChart;
