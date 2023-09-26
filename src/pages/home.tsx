@@ -1,6 +1,6 @@
 import React, { FC, useState, useCallback, useEffect } from 'react';
 import { ShoppingData } from '@interfaces/commonResponse';
-import useDeviceInput from '@hooks/useInputs';
+import useDeviceInput from '@hooks/useDeviceInput';
 // redux
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@reducers/reducer';
@@ -38,15 +38,34 @@ const Home: FC = () => {
     inputValues.startDate || '',
   );
   const [endDate, setEndDate] = useState<string>(inputValues.endDate || '');
-  const [timeUnit, setTimeUnit] = useState<string>(inputValues.timeUnit || '');
-  const [category, setCategory] = useState<string>(inputValues.category || '');
-  const [keyword, setKeyword] = useState<string>(inputValues.keyword || '');
-  // const [device, setDevice] = useInputs<string>(inputValues.device || '');
-  const [gender, setGender] = useState<string>(inputValues.gender || '');
-
-  const [device, handleDeviceChange] = useDeviceInput(inputValues.device || '');
-
+  // const [timeUnit, setTimeUnit] = useState<string>(inputValues.timeUnit || '');
+  // const [category, setCategory] = useState<string>(inputValues.category || '');
+  // const [keyword, setKeyword] = useState<string>(inputValues.keyword || '');
+  // const [device, setDevice] = useState<string>(inputValues.device || '');
+  // const [gender, setGender] = useState<string>(inputValues.gender || '');
   const [age, setAge] = useState<string[]>(inputValues.ages || []);
+
+  // custom hook
+  const [keyword, handleKeywordChange] = useDeviceInput(
+    'keyword',
+    inputValues.keyword || '',
+  );
+  const [category, handleCategoryChange] = useDeviceInput(
+    'category',
+    inputValues.category || '',
+  );
+  const [device, handleDeviceChange] = useDeviceInput(
+    'device',
+    inputValues.device || '',
+  );
+  const [gender, handleGenderChange] = useDeviceInput(
+    'gender',
+    inputValues.gender || '',
+  );
+  const [timeUnit, handleTimeUnitChange] = useDeviceInput(
+    'timeUnit',
+    inputValues.timeUnit || '',
+  );
 
   const agelist = [
     { value: '10', label: '10대', color: 'red' },
@@ -115,7 +134,7 @@ const Home: FC = () => {
     );
   };
 
-  const handleChange = (value: string[]) => {
+  const handleAgesChange = (value: string[]) => {
     setCheckAges(value);
     dispatch(updateInputValues({ ...inputValues, ages: value }));
   };
@@ -146,12 +165,9 @@ const Home: FC = () => {
             addonBefore="카테고리"
             value={category}
             placeholder="카테고리를 입력하세요"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setCategory(e.target.value);
-              dispatch(
-                updateInputValues({ ...inputValues, category: e.target.value }),
-              );
-            }}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleCategoryChange(e.target.value)
+            }
           />
         </Space.Compact>
 
@@ -160,12 +176,9 @@ const Home: FC = () => {
             addonBefore="키워드"
             value={keyword}
             placeholder="키워드를 입력하세요"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setKeyword(e.target.value);
-              dispatch(
-                updateInputValues({ ...inputValues, keyword: e.target.value }),
-              );
-            }}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleKeywordChange(e.target.value)
+            }
           />
         </Space.Compact>
       </PageDataInfo>
@@ -173,10 +186,7 @@ const Home: FC = () => {
       <PageDataSubInfo>
         <Space.Compact>
           <Select
-            onChange={(value: string) => {
-              setTimeUnit(value);
-              dispatch(updateInputValues({ ...inputValues, timeUnit: value }));
-            }}
+            onChange={handleTimeUnitChange}
             style={{ width: 120 }}
             placeholder="구간 단위"
             value={timeUnit}
@@ -193,10 +203,7 @@ const Home: FC = () => {
           />
         </Space.Compact>
         <Select
-          onChange={(value: string) => {
-            setGender(value);
-            dispatch(updateInputValues({ ...inputValues, gender: value }));
-          }}
+          onChange={handleGenderChange}
           style={{ width: 120 }}
           placeholder="성별"
           value={gender}
@@ -207,7 +214,7 @@ const Home: FC = () => {
           ]}
         />
         <Select
-          onChange={(value: string) => handleDeviceChange(value)}
+          onChange={handleDeviceChange}
           style={{ width: 120 }}
           value={device}
           placeholder="기기"
@@ -223,7 +230,7 @@ const Home: FC = () => {
             allowClear
             style={{ width: '100%' }}
             placeholder="사용자의 연령별 트렌드 조회"
-            onChange={handleChange}
+            onChange={handleAgesChange}
             options={agelist}
             value={checkAges}
           />
