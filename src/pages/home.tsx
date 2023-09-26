@@ -4,6 +4,7 @@ import useDeviceInput from '@hooks/useDeviceInput';
 // redux
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@reducers/reducer';
+import dayjs from 'dayjs';
 import { updateInputValues, requestChart } from '@reducers/action';
 
 // Chart Library(recharts)
@@ -21,13 +22,11 @@ import {
 // Antd
 import { Button, Space, Select, Input, DatePicker } from 'antd';
 import type { RangePickerProps } from 'antd/es/date-picker';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import dayjs from 'dayjs';
+
 import { PageDataInfo, PageDataSubInfo, PageGraphContents } from './style';
 
 const { Option } = Select;
 
-// eslint-disable-next-line react/function-component-definition
 const Home: FC = () => {
   const dispatch = useDispatch();
 
@@ -76,7 +75,6 @@ const Home: FC = () => {
   ];
 
   const [checkAges, setCheckAges] = useState<string[]>(inputValues.ages || []);
-
   useEffect(() => {
     const persistInputValues = localStorage.getItem('persist:root');
     if (persistInputValues && persistInputValues.length < 100) {
@@ -87,7 +85,7 @@ const Home: FC = () => {
 
   useEffect(() => {
     localStorage.setItem('persist:root', JSON.stringify({ inputValues }));
-  }, [inputValues, dispatch]);
+  }, [inputValues]);
 
   const handleChart = useCallback(async () => {
     try {
@@ -138,7 +136,7 @@ const Home: FC = () => {
     setCheckAges(value);
     dispatch(updateInputValues({ ...inputValues, ages: value }));
   };
-
+  
   return (
     <>
       <PageDataInfo>

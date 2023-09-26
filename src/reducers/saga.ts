@@ -8,9 +8,7 @@ function* sagaChartData(action: any) {
     const params: ShoppingData = action.payload;
     const data: APIResponse = yield call(postChart, params);
 
-    if (data) {
-      yield put({ type: API_SUCCESS, data });
-    }
+    if (data) yield put({ type: API_SUCCESS, data });
   } catch (error) {
     yield put({ type: API_ERROR, error });
   }
