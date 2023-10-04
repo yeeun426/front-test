@@ -6,7 +6,9 @@
       "@hooks/*": ["./hooks/*"],
       "@interfaces/*": ["./interfaces/*"],
       "@pages/*": ["./pages/*"],
-      "@reducers/*": ["./reducers/*"]
+      "@reducers/*": ["./reducers/*"],
+      "@component/*": ["./component/*"],
+      "@assets/*": ["./assets/*"]
     }
   }
 }

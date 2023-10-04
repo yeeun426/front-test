@@ -1,11 +1,12 @@
-import React, { FC, useState, useCallback, useEffect } from 'react';
-import { ShoppingData } from '@interfaces/commonResponse';
-import useDeviceInput from '@hooks/useDeviceInput';
+import React, { FC, useState, useCallback, useEffect } from "react";
+import { ShoppingData } from "@interfaces/commonResponse";
+import useDeviceInput from "@hooks/useDeviceInput";
+import { allCategory, agelist } from "@assets/constant/categoryLable";
 // redux
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '@reducers/reducer';
-import dayjs from 'dayjs';
-import { updateInputValues, requestChart } from '@reducers/action';
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@reducers/reducer";
+import dayjs from "dayjs";
+import { updateInputValues, requestChart } from "@reducers/action";
 
 // Chart Library(recharts)
 import {
@@ -17,13 +18,13 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from 'recharts';
+} from "recharts";
 
 // Antd
-import { Button, Space, Select, Input, DatePicker } from 'antd';
-import type { RangePickerProps } from 'antd/es/date-picker';
+import { Button, Space, Select, Input, DatePicker } from "antd";
+import type { RangePickerProps } from "antd/es/date-picker";
 
-import { PageDataInfo, PageDataSubInfo, PageGraphContents } from './style';
+import { PageDataInfo, PageDataSubInfo, PageGraphContents } from "./style";
 
 const { Option } = Select;
 
@@ -34,49 +35,36 @@ const Home: FC = () => {
   const trend = useSelector((state: RootState) => state.inputValues.trend);
 
   const [startDate, setStartDate] = useState<string>(
-    inputValues.startDate || '',
+    inputValues.startDate || ""
   );
-  const [endDate, setEndDate] = useState<string>(inputValues.endDate || '');
-  // const [timeUnit, setTimeUnit] = useState<string>(inputValues.timeUnit || '');
-  // const [category, setCategory] = useState<string>(inputValues.category || '');
-  // const [keyword, setKeyword] = useState<string>(inputValues.keyword || '');
-  // const [device, setDevice] = useState<string>(inputValues.device || '');
-  // const [gender, setGender] = useState<string>(inputValues.gender || '');
+  const [endDate, setEndDate] = useState<string>(inputValues.endDate || "");
   const [age, setAge] = useState<string[]>(inputValues.ages || []);
+  const [checkAges, setCheckAges] = useState<string[]>(inputValues.ages || []);
 
   // custom hook
   const [keyword, handleKeywordChange] = useDeviceInput(
-    'keyword',
-    inputValues.keyword || '',
+    "keyword",
+    inputValues.keyword || ""
   );
   const [category, handleCategoryChange] = useDeviceInput(
-    'category',
-    inputValues.category || '',
+    "category",
+    inputValues.category || ""
   );
   const [device, handleDeviceChange] = useDeviceInput(
-    'device',
-    inputValues.device || '',
+    "device",
+    inputValues.device || ""
   );
   const [gender, handleGenderChange] = useDeviceInput(
-    'gender',
-    inputValues.gender || '',
+    "gender",
+    inputValues.gender || ""
   );
   const [timeUnit, handleTimeUnitChange] = useDeviceInput(
-    'timeUnit',
-    inputValues.timeUnit || '',
+    "timeUnit",
+    inputValues.timeUnit || ""
   );
 
-  const agelist = [
-    { value: '10', label: '10대', color: 'red' },
-    { value: '20', label: '20대', color: 'blue' },
-    { value: '30', label: '30대', color: 'orange' },
-    { value: '40', label: '40대', color: 'pink' },
-    { value: '50', label: '50대', color: 'black' },
-  ];
-
-  const [checkAges, setCheckAges] = useState<string[]>(inputValues.ages || []);
   useEffect(() => {
-    const persistInputValues = localStorage.getItem('persist:root');
+    const persistInputValues = localStorage.getItem("persist:root");
     if (persistInputValues && persistInputValues.length < 100) {
       const savedInputValues = JSON.parse(persistInputValues);
       dispatch(updateInputValues(savedInputValues.inputValues));
@@ -84,7 +72,7 @@ const Home: FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    localStorage.setItem('persist:root', JSON.stringify({ inputValues }));
+    localStorage.setItem("persist:root", JSON.stringify({ inputValues }));
   }, [inputValues]);
 
   const handleChart = useCallback(async () => {
@@ -118,8 +106,8 @@ const Home: FC = () => {
   ]);
 
   const onDateChange = (
-    value: RangePickerProps['value'],
-    dateString: [string, string] | string,
+    value: RangePickerProps["value"],
+    dateString: [string, string] | string
   ) => {
     setStartDate(dateString[0]);
     setEndDate(dateString[1]);
@@ -128,7 +116,7 @@ const Home: FC = () => {
         ...inputValues,
         startDate: dateString[0],
         endDate: dateString[1],
-      }),
+      })
     );
   };
 
@@ -136,7 +124,7 @@ const Home: FC = () => {
     setCheckAges(value);
     dispatch(updateInputValues({ ...inputValues, ages: value }));
   };
-  
+
   return (
     <>
       <PageDataInfo>
@@ -148,12 +136,12 @@ const Home: FC = () => {
             <DatePicker.RangePicker
               defaultValue={[dayjs(startDate), dayjs(endDate)]}
               onChange={onDateChange}
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
             />
           ) : (
             <DatePicker.RangePicker
               onChange={onDateChange}
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
             />
           )}
         </Space.Compact>
@@ -186,47 +174,30 @@ const Home: FC = () => {
           <Select
             onChange={handleTimeUnitChange}
             style={{ width: 120 }}
-            placeholder="구간 단위"
+            placeholder={allCategory["timeUnit"].label}
             value={timeUnit}
-            options={[
-              {
-                label: '구간 단위',
-                options: [
-                  { value: 'date', label: 'date' },
-                  { value: 'week', label: 'week' },
-                  { value: 'month', label: 'month' },
-                ],
-              },
-            ]}
+            options={allCategory["timeUnit"].options}
           />
         </Space.Compact>
         <Select
           onChange={handleGenderChange}
           style={{ width: 120 }}
-          placeholder="성별"
+          placeholder={allCategory["gender"].label}
           value={gender}
-          options={[
-            { value: '', label: '설정 안 함' },
-            { value: 'm', label: '남성' },
-            { value: 'f', label: '여성' },
-          ]}
+          options={allCategory["gender"].options}
         />
         <Select
           onChange={handleDeviceChange}
           style={{ width: 120 }}
           value={device}
-          placeholder="기기"
-          options={[
-            { value: '', label: '설정 안 함' },
-            { value: 'pc', label: 'PC' },
-            { value: 'mo', label: '모바일' },
-          ]}
+          placeholder={allCategory["device"].label}
+          options={allCategory["device"].options}
         />
-        <Space style={{ width: '25%' }} direction="vertical">
+        <Space style={{ width: "25%" }} direction="vertical">
           <Select
             mode="multiple"
             allowClear
-            style={{ width: '100%' }}
+            style={{ width: "100%" }}
             placeholder="사용자의 연령별 트렌드 조회"
             onChange={handleAgesChange}
             options={agelist}
@@ -249,7 +220,7 @@ const Home: FC = () => {
               <Legend />
               {age.map((ageItem) => {
                 const ageData = trend.filter(
-                  (item: any) => item.group === ageItem,
+                  (item: any) => item.group === ageItem
                 );
                 return (
                   <Line
@@ -267,6 +238,7 @@ const Home: FC = () => {
             </LineChart>
           </ResponsiveContainer>
         )}
+        {allCategory["timeUnit"].label}
       </PageGraphContents>
     </>
   );
