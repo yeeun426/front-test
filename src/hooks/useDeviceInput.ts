@@ -1,11 +1,11 @@
-import React, { useState, useCallback } from 'react';
-import { updateInputValues } from '@reducers/action';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '@reducers/reducer'; // eslint-disable-line no-unused-vars
+import React, { useState, useCallback } from "react";
+import { updateInputValues } from "@reducers/action";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@reducers/reducer"; // eslint-disable-line no-unused-vars
 
 function useDeviceInput(
   category: string,
-  initialValue: string,
+  initialValue: string
 ): [string, (value: string) => void] {
   const [shoppingValue, setShoppingValue] = useState<string>(initialValue);
 
@@ -14,7 +14,7 @@ function useDeviceInput(
 
   const handleDeviceChange = useCallback(
     (value: string | React.ChangeEvent<HTMLInputElement>) => {
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         setShoppingValue(value);
         dispatch(updateInputValues({ ...inputValues, [category]: value }));
       }
@@ -25,7 +25,7 @@ function useDeviceInput(
       //   );
       // }
     },
-    [dispatch, updateInputValues, inputValues],
+    [dispatch, inputValues, category]
   );
 
   return [shoppingValue, handleDeviceChange];
