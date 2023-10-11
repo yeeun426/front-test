@@ -10,11 +10,13 @@ import { updateInputValues, requestChart } from "@reducers/action";
 export const useTrendDataSubInfo = () => {
   const dispatch = useDispatch();
   const inputValues = useSelector((state: RootState) => state.inputValues);
-
-  const startDate = inputValues.startDate || "";
-  const endDate = inputValues.endDate || "";
-  const category = inputValues.category || "";
-  const keyword = inputValues.keyword || "";
+  console.log(inputValues);
+  const {
+    startDate = "",
+    endDate = "",
+    category = "",
+    keyword = "",
+  } = inputValues;
 
   const [checkAges, setCheckAges] = useState<string[]>(inputValues.ages || []);
 
@@ -38,7 +40,7 @@ export const useTrendDataSubInfo = () => {
 
   useEffect(() => {
     const persistInputValues = localStorage.getItem("persist:root");
-    if (persistInputValues && persistInputValues.length < 100) {
+    if (persistInputValues && typeof persistInputValues === "object") {
       const savedInputValues = JSON.parse(persistInputValues);
       dispatch(updateInputValues(savedInputValues.inputValues));
     }

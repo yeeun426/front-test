@@ -15,15 +15,10 @@ function useDeviceInput(
   const handleDeviceChange = useCallback(
     (value: string | React.ChangeEvent<HTMLInputElement>) => {
       if (typeof value === "string") {
+        console.log(value);
         setShoppingValue(value);
         dispatch(updateInputValues({ ...inputValues, [category]: value }));
       }
-      // else {
-      //   setShoppingValue(value.target.value);
-      //   dispatch(
-      //     updateInputValues({ ...inputValues, [category]: value.target.value }),
-      //   );
-      // }
     },
     [dispatch, inputValues, category]
   );

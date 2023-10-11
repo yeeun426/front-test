@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { useTrendDataSubInfo } from "@hooks/useTrendDataSubInfo";
+
 import { PageDataSubInfo } from "@pages/style";
 import { allCategory, agelist } from "@assets/constant/categoryLable";
 

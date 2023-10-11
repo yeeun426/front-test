@@ -5,16 +5,17 @@ import { useTrendDataInfo } from "@hooks/useTrendDataInfo";
 // Antd
 import { Space, Select, Input, DatePicker } from "antd";
 import dayjs from "dayjs";
+
 const { Option } = Select;
 
 const TrendDataInfo: FC = () => {
   const {
     startDate,
     endDate,
-    category,
-    keyword,
     onDateChange,
+    category,
     handleCategoryChange,
+    keyword,
     handleKeywordChange,
   } = useTrendDataInfo();
 

@@ -15,6 +15,7 @@ export const useTrendDataInfo = () => {
     inputValues.startDate || ""
   );
   const [endDate, setEndDate] = useState<string>(inputValues.endDate || "");
+
   //custom hook
   const [category, handleCategoryChange] = useDeviceInput(
     "category",
