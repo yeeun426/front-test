@@ -1,7 +1,8 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { updateInputValues } from "@reducers/action";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@reducers/reducer"; // eslint-disable-line no-unused-vars
+import { debounce } from "lodash";
 
 function useDeviceInput(
   category: string,
@@ -12,15 +13,23 @@ function useDeviceInput(
   const dispatch = useDispatch();
   const inputValues = useSelector((state: RootState) => state.inputValues);
 
+  const handleDelayChange = useMemo(
+    () =>
+      debounce((value: string | React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(updateInputValues({ ...inputValues, [category]: value }));
+        console.log(value);
+      }, 300),
+    [category, dispatch, inputValues]
+  );
+
   const handleDeviceChange = useCallback(
     (value: string | React.ChangeEvent<HTMLInputElement>) => {
       if (typeof value === "string") {
-        console.log(value);
         setShoppingValue(value);
-        dispatch(updateInputValues({ ...inputValues, [category]: value }));
+        handleDelayChange(value);
       }
     },
-    [dispatch, inputValues, category]
+    [handleDelayChange]
   );
 
   return [shoppingValue, handleDeviceChange];

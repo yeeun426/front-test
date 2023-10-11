@@ -10,7 +10,7 @@ import { updateInputValues, requestChart } from "@reducers/action";
 export const useTrendDataSubInfo = () => {
   const dispatch = useDispatch();
   const inputValues = useSelector((state: RootState) => state.inputValues);
-  console.log(inputValues);
+
   const {
     startDate = "",
     endDate = "",
